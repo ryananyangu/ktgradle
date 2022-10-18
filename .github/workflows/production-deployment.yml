@@ -9,14 +9,9 @@ on:
   #   - cron: '45 12 * * 5'
 
 jobs:
-    # test:
+    build:
 
-
-
-
-    bin-build:
-
-      name: Publish docker image to ecr
+      name: Test and Build
       runs-on: ubuntu-latest
 
 
@@ -45,8 +40,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-      - run: | 
-          ./gradlew build --no-daemon
+      - run: ./gradlew build --no-daemon
 
 
       - name: Adding test coverage to Pull request
@@ -57,5 +51,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
-    
-    # docker-build:
