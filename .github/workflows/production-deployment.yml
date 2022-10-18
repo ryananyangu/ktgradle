@@ -61,3 +61,6 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp:${{ steps.release_hash.outputs.sha_short }}
+      
+      - name: "ktlint"
+         uses: "vroy/gha-kotlin-linter@v1"
