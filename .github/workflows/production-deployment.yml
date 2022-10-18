@@ -17,12 +17,13 @@ jobs:
 
       steps:
 
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+
       - name: Compute release hash
         id: release_hash
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
-      - name: Code Checkout
-        uses: actions/checkout@v3
 
       - name: echo Job env vars
         run: |
