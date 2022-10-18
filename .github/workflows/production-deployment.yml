@@ -9,7 +9,12 @@ on:
   #   - cron: '45 12 * * 5'
 
 jobs:
-    build:
+    # test:
+
+
+
+
+    bin-build:
 
       name: Publish docker image to ecr
       runs-on: ubuntu-latest
@@ -34,10 +39,24 @@ jobs:
           echo "TF_WORKSPACE=${GITHUB_HEAD_REF##*/}"
           echo ${{ steps.release_hash.outputs.sha_short }}
 
-      - name: Running Build
+      - name: Running Test and Build
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-      - run: ./gradlew build --no-daemon
+      - run: | 
+          ./gradlew build --no-daemon
+          ./gradlew testCoverage
+
+
+      - name: Adding test coverage to Pull request
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.3
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/testCoverage/testCoverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+    
+    # docker-build:
