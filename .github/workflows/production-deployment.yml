@@ -20,11 +20,6 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v3
 
-
-      - name: Compute release hash
-        id: release_hash
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
       - name: echo Job env vars
         run: |
           echo ${GITHUB_HEAD_REF}
@@ -32,7 +27,7 @@ jobs:
           echo ${{github.ref}}
           echo ${GITHUB_REF##*/}
           echo "TF_WORKSPACE=${GITHUB_HEAD_REF##*/}"
-          run: echo ${{ steps.release_hash.outputs.sha_short }}
+          run: echo ${GITHUB_SHA}
 
       - name: Running Build
         uses: actions/setup-java@v3
