@@ -16,13 +16,22 @@ jobs:
 
 
       steps:
-      - name: Checkout
+      - name: Code Checkout
         uses: actions/checkout@v3
 
-      - name: echo branch names
+      - name: echo Job env vars
         run: |
           echo ${GITHUB_HEAD_REF}
           echo ${{github.base_ref}}
           echo ${{github.ref}}
           echo ${GITHUB_REF##*/}
           echo "TF_WORKSPACE=${GITHUB_HEAD_REF##*/}"
+          echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.event.pull_request.head.sha }})"
+
+      - name: Running Build
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      - run: ./gradlew build --no-daemon
