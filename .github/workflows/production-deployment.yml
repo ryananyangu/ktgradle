@@ -50,17 +50,17 @@ jobs:
           min-coverage-overall: 40
           min-coverage-changed-files: 60
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Docker Build & Push Action
+        uses: mr-smithers-excellent/docker-build-push@v5.8
         with:
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp
+          tags: ${{ steps.release_hash.outputs.sha_short }}
+          registry: docker.io
+          dockerfile: Dockerfile.ci
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          pushImage: true
       
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp:${{ steps.release_hash.outputs.sha_short }}
       
       - name: "ktlint"
         uses: "vroy/gha-kotlin-linter@v1"
