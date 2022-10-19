@@ -21,6 +21,23 @@ jobs:
         uses: actions/checkout@v3
 
 
+      - name: Run ktlint with reviewdog
+        uses: ScaCap/action-ktlint@1.4
+        with:
+          # GITHUB_TOKEN
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Report level for reviewdog [info,warning,error]
+          level: info
+          reporter: github-pr-check
+          # Filtering mode for the reviewdog command [added,diff_context,file,nofilter].
+          # Default is added.
+
+          filter_mode: added
+          # Exit code for reviewdog when errors are found [true,false]
+          # Default is `false`.
+          fail_on_error: true
+
+
       - name: Compute release hash
         id: release_hash
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
@@ -60,7 +77,3 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           pushImage: true
-      
-      
-      - name: "ktlint"
-        uses: "vroy/gha-kotlin-linter@v1"
