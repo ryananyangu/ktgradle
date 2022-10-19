@@ -5,8 +5,9 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  # schedule:
-  #   - cron: '45 12 * * 5'
+    types:
+      - submitted
+      - closed
 
 jobs:
     build:
@@ -69,6 +70,7 @@ jobs:
 
       - name: Docker Build & Push Action
         uses: mr-smithers-excellent/docker-build-push@v5.8
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' # Only build image if the PR has actually been closed
         with:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp
           tags: ${{ steps.release_hash.outputs.sha_short }}
