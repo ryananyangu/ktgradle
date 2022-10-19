@@ -56,6 +56,7 @@ jobs:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp
           tags: ${{ steps.release_hash.outputs.sha_short }}
           registry: docker.io
+          dockerfile: Dockerfile.ci
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           pushImage: true
