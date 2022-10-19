@@ -9,5 +9,4 @@ class KtgradleApplicationTests {
 	@Test
 	fun contextLoads() {
 	}
-
 }
