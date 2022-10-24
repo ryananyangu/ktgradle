@@ -23,9 +23,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mustache")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.apache.httpcomponents:httpclient")
+    implementation("org.apache.httpcomponents:httpcore")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+    
 }
 
 tasks.withType<KotlinCompile> {
@@ -56,22 +59,15 @@ tasks.jacocoTestReport {
 }
 
 tasks.jacocoTestCoverageVerification {
+    
     violationRules {
+        
         rule {
-            limit {
-                minimum = "0.5".toBigDecimal()
-            }
-        }
-
-        rule {
-            isEnabled = false
-            element = "CLASS"
-            includes = listOf("org.gradle.*")
-
+            element = "PACKAGE"
+            
             limit {
                 counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = "0.3".toBigDecimal()
+                minimum = "0.4".toBigDecimal()
             }
         }
     }
