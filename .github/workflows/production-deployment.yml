@@ -65,7 +65,7 @@ jobs:
 
       # Upload code analysis report to github
       - name: Upload Static code report to Github using the upload-sarif action
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
           sarif_file: ${{ github.workspace }}/build/reports/detekt/detekt.sarif
