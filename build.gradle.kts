@@ -4,11 +4,11 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 plugins {
 	jacoco
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-    id("io.gitlab.arturbosch.detekt").version("1.22.0-RC2")
+    id("io.gitlab.arturbosch.detekt").version("1.21.0")
 	id("org.springframework.boot") version "2.7.4"
 	id("io.spring.dependency-management") version "1.0.14.RELEASE"
-	kotlin("jvm") version "1.6.21"
-	kotlin("plugin.spring") version "1.6.21"
+	kotlin("jvm") version "1.7.0"
+	kotlin("plugin.spring") version "1.7.0"
 }
 
 group = "tech.zohari"
@@ -35,9 +35,11 @@ dependencies {
 }
 
 
+
+
 // NOTE: Detekt plugin for setting static code analysis
 detekt {
-    toolVersion = "1.22.0-RC2"
+    // toolVersion = "1.22.0-RC2"
     // config = files("config/detekt/detekt.yml")
     buildUponDefaultConfig = true
     reports {
