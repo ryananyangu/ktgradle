@@ -7,7 +7,8 @@ import org.springframework.boot.Banner
 @SpringBootApplication
 class KtgradleApplication
 
-fun main(args: Array<String>) {
+fun main(args: Array<String>) {// @Generated
+
 	runApplication<KtgradleApplication>(*args){
 		setBannerMode(Banner.Mode.OFF)
 	}

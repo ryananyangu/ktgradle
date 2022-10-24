@@ -15,13 +15,34 @@ jobs:
       name: Test and Build
       runs-on: ubuntu-latest
 
-
+      # Checkout the code repository
       steps:
-
       - name: Code Checkout
         uses: actions/checkout@v3
 
+      # Compute short commit hash
+      - name: Compute release hash
+        id: release_hash
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
+      # Display the variables saved for build
+      - name: echo Job env vars
+        run: |
+          echo ${GITHUB_HEAD_REF}
+          echo ${{github.base_ref}}
+          echo ${{github.ref}}
+          echo ${{ steps.release_hash.outputs.sha_short }}
+
+      # Running unit tests and doing the code build
+      - name: Running Test and Build
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      - run: ./gradlew clean build --no-daemon
+
+      # Running ktlint for code linting
       - name: Run ktlint with reviewdog
         uses: ScaCap/action-ktlint@1.4
         with:
@@ -38,27 +59,18 @@ jobs:
           # Default is `false`.
           fail_on_error: true
 
+      # Running detekt for code smells
+      - name: Static code analysis with detekt
+        run: ./gradlew detekt
 
-      - name: Compute release hash
-        id: release_hash
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
-      - name: echo Job env vars
-        run: |
-          echo ${GITHUB_HEAD_REF}
-          echo ${{github.base_ref}}
-          echo ${{github.ref}}
-          echo ${{ steps.release_hash.outputs.sha_short }}
-
-      - name: Running Test and Build
-        uses: actions/setup-java@v3
+      # Upload code analysis report to github
+      - name: Upload Static code report to Github using the upload-sarif action
+        uses: github/codeql-action/upload-sarif@v1
+        if: success() || failure()
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
-      - run: ./gradlew build --no-daemon
+          sarif_file: build/detekt.sarif
 
-
+      # Generating unit test code coverage
       - name: Adding test coverage Report
         id: jacoco
         uses: madrapps/jacoco-report@v1.3
@@ -68,6 +80,7 @@ jobs:
           min-coverage-overall: 40
           min-coverage-changed-files: 60
 
+      # Docker build and push to docker registry
       - name: Docker Build & Push Action
         uses: mr-smithers-excellent/docker-build-push@v5.8
         if: github.event_name == 'pull_request' && github.event.action == 'closed' # Only build image if the PR has actually been closed
