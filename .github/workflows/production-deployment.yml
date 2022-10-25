@@ -23,14 +23,17 @@ jobs:
       - name: echo Job env vars
         run: env
 
-      # Running unit tests and doing the code build
-      - name: Running Test and Build
+      # Fetch dependancies or get from cache
+      - name: Fetch Dependancies
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-      - run: ./gradlew clean build --no-daemon
+      
+      # Compile the java code to byte code
+      - name: Build the jar file
+        run: ./gradlew clean build --no-daemon
 
       # Running ktlint for code linting
       - name: Run ktlint with reviewdog
@@ -58,7 +61,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
-          ref: refs/heads/${{ github.head_ref }}
+          ref: "refs/heads/$GITHUB_REF_NAME"
           sha: ${{ github.sha }}
           sarif_file: ${{ github.workspace }}/build/reports/detekt/detekt.sarif
 
