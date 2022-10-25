@@ -28,7 +28,7 @@ jobs:
       # Display the variables saved for build
       - name: echo Job env vars
         run: |
-          echo ${GITHUB_HEAD_REF}
+          echo ${{ github.head_ref }}
           echo ${{github.base_ref}}
           echo ${{github.ref}}
           echo ${{ steps.release_hash.outputs.sha_short }}
@@ -68,6 +68,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
+          ref: '${{ github.head_ref }}'
+          sha: '${{ github.sha }}'
           sarif_file: ${{ github.workspace }}/build/reports/detekt/detekt.sarif
 
       # Generating unit test code coverage
