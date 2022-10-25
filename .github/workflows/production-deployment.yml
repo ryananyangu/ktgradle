@@ -28,10 +28,10 @@ jobs:
       # Display the variables saved for build
       - name: echo Job env vars
         run: |
-          echo ${{ github.head_ref }}
+          echo ${GITHUB_REF#refs/heads/}
           echo ${{github.base_ref}}
           echo ${{github.ref}}
-          echo ${{ steps.release_hash.outputs.sha_short }}
+          echo $(git rev-parse --short HEAD)
 
       # Running unit tests and doing the code build
       - name: Running Test and Build
