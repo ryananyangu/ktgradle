@@ -61,7 +61,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
-          ref: 'refs/heads/${{env.GITHUB_REF_NAME}}'
+          ref: refs/heads/${{github.ref}}
           sha: ${{ github.sha }}
           sarif_file: ${{ github.workspace }}/build/reports/detekt/detekt.sarif
 
