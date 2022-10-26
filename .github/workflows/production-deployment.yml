@@ -7,6 +7,7 @@ on:
     branches: [ "master" ]
     types:
       - submitted
+      - closed
 
 jobs:
     build:
@@ -19,21 +20,27 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v3
 
+      # # Compute short commit hash
+      # - name: Compute release hash
+      #   id: release_hash
+      #   run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
       # Display the variables saved for build
       - name: echo Job env vars
-        run: env
+        run: |
+          echo ${GITHUB_HEAD_REF}
+          echo ${{github.base_ref}}
+          echo ${{github.ref}}
+          echo ${{ steps.release_hash.outputs.sha_short }}
 
-      # Fetch dependancies or get from cache
-      - name: Fetch Dependancies
+      # Running unit tests and doing the code build
+      - name: Running Test and Build
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-      
-      # Compile the java code to byte code
-      - name: Build the jar file
-        run: ./gradlew clean build --no-daemon
+      - run: ./gradlew clean build --no-daemon
 
       # Running ktlint for code linting
       - name: Run ktlint with reviewdog
@@ -52,15 +59,15 @@ jobs:
           # Default is `false`.
           fail_on_error: true
 
-
-      # Upload code analysis report to github
-      - name: Upload Static code report to Github using the upload-sarif action
-        uses: github/codeql-action/upload-sarif@v2
-        if: success() || failure()
+      - name: detekt
+        uses: alaegin/Detekt-Action@v1.21.0-RC2
         with:
-          ref: ${{github.ref}}
-          sha: ${{ github.sha }}
-          sarif_file: ${{ github.workspace }}/build/reports/detekt/detekt.sarif
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          detekt_config: ${{ github.workspace }}/config/detekt/detekt.yml # Change config path
+          fail_on_error: true
+          reviewdog_level: info
+          reviewdog_reporter: github-pr-check
+          # detekt_baseline: 
 
       # Generating unit test code coverage
       - name: Adding test coverage Report
@@ -78,7 +85,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.action == 'closed' # Only build image if the PR has actually been closed
         with:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp
-          tags: $(git rev-parse --short HEAD)
+          tags: ${{ steps.release_hash.outputs.sha_short }}
           registry: docker.io
           dockerfile: Dockerfile.ci
           username: ${{ secrets.DOCKERHUB_USERNAME }}
